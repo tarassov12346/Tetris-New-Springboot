@@ -1,0 +1,9 @@
+body {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  background-color: rgb(255, 255, 128);
+}
+
+#controls{text-align: center;}
+
+#header{text-align: center;}
