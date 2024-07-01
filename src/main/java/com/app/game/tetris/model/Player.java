@@ -1,14 +1,9 @@
 package com.app.game.tetris.model;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-
-
 
 @Component
 @Scope("prototype")
@@ -16,10 +11,11 @@ import org.springframework.stereotype.Component;
 @Entity
 @Table(name = "player5")
 public class Player {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "name")
     private String playerName;

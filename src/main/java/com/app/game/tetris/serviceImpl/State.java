@@ -2,10 +2,7 @@ package com.app.game.tetris.serviceImpl;
 
 import com.app.game.tetris.model.Player;
 import com.app.game.tetris.model.Tetramino;
-import com.app.game.tetris.persistence.Dao;
 import com.app.game.tetris.service.GameLogic;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +15,6 @@ public class State implements GameLogic<Optional<State>> {
     private final boolean isRunning;
     private final Player player;
     private int stepDown = 1;
-
-    ApplicationContext context = new AnnotationConfigApplicationContext("com.app.game.tetris.persistence");
-    public Dao dao = context.getBean(Dao.class);
 
     public State(Stage stage, boolean isRunning, Player player) {
         this.stage = Objects.requireNonNull(stage);
@@ -48,13 +42,6 @@ public class State implements GameLogic<Optional<State>> {
 
     public void stop() {
         new State(stage, false, player);
-    }
-
-    public void recordScore() {
-        if (stage.getPause().toString().equals("go!")) {
-            dao.recordScore(player);
-            dao.retrieveScores();
-        }
     }
 
     @Override

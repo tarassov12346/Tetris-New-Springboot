@@ -2,9 +2,11 @@ package com.app.game.tetris.controller;
 
 import com.app.game.tetris.config.PlayGameConfiguration;
 import com.app.game.tetris.config.StartGameConfiguration;
+import com.app.game.tetris.daoservice.DaoService;
 import com.app.game.tetris.model.Player;
 import com.app.game.tetris.serviceImpl.State;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
@@ -21,8 +23,10 @@ public class GameController {
     private Player player;
     private State state;
 
+    @Autowired
+    private DaoService daoService;
+
     @GetMapping({
-            "/",
             "/hello"
     })
     public String hello(){
@@ -62,7 +66,10 @@ public class GameController {
             case 2 -> state = (State) context.getBean("moveLeftState", state);
             case 3 -> state = (State) context.getBean("moveRightState", state);
             case 4 -> state = (State) context.getBean("dropDownState", state);
-            case 5 -> state.recordScore();
+            case 5 -> {
+                daoService.recordScore(player);
+                daoService.retrieveScores();
+            }
         }
         makeGamePageView();
         return "index";
@@ -85,8 +92,8 @@ public class GameController {
         state.setStepDown(player.getPlayerScore() / 10 + 1);
         currentSession.setAttribute("player", player.getPlayerName());
         currentSession.setAttribute("score", player.getPlayerScore());
-        currentSession.setAttribute("bestplayer", state.dao.bestPlayer);
-        currentSession.setAttribute("bestscore", state.dao.bestScore);
+        currentSession.setAttribute("bestplayer", daoService.getBestPlayer());
+        currentSession.setAttribute("bestscore", daoService.getBestScore());
         currentSession.setAttribute("stepdown", state.getStepDown());
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 12; j++) {
