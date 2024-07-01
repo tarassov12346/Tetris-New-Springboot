@@ -1,4 +1,4 @@
-package com.app.game.tetris.persistence;
+package com.app.game.tetris.daoserviceImpl;
 
 import com.app.game.tetris.daoservice.DaoService;
 import com.app.game.tetris.model.Player;
