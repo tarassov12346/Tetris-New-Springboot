@@ -4,12 +4,13 @@ import com.app.game.tetris.model.Tetramino;
 import com.app.game.tetris.service.GameLogic;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-@Component
+@Service
 @Scope("prototype")
 public class Stage implements GameLogic<Stage> {
     private static final StringBuilder pause = new StringBuilder("go!");

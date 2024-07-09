@@ -5,10 +5,11 @@ import com.app.game.tetris.model.Tetramino;
 import com.app.game.tetris.service.GameLogic;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Component
+@Service
 @Scope("prototype")
 public class State implements GameLogic<Optional<State>> {
     private final Stage stage;
