@@ -5,8 +5,8 @@ import com.app.game.tetris.model.Tetramino;
 import com.app.game.tetris.service.GameLogic;
 import com.app.game.tetris.serviceImpl.Stage;
 import com.app.game.tetris.serviceImpl.State;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
@@ -17,6 +17,9 @@ import java.util.stream.IntStream;
 @Configuration
 public class StartGameConfiguration {
 
+    @Autowired
+    private ApplicationContext context;
+
     public Player createPlayer() {
         List<String> list = new ArrayList<>();
         list.add("Oswaldo");
@@ -26,12 +29,10 @@ public class StartGameConfiguration {
         list.add("Ira");
         list.add("Wolfy");
         String playerName = list.get(new Random().nextInt(list.size()));
-        ApplicationContext context =new AnnotationConfigApplicationContext("com.app.game.tetris.model");
         return context.getBean(Player.class,playerName,0);
     }
 
     public State initiateState() {
-        ApplicationContext context =new AnnotationConfigApplicationContext("com.app.game.tetris.serviceImpl");
         Stage emptyStage=context.getBean(Stage.class,makeEmptyMatrix(), getTetramino0(), 0, 0, 0);
         State initialState=context.getBean(State.class, emptyStage, false, createPlayer());
         return initialState.start().createStateWithNewTetramino().orElse(initialState);
@@ -44,7 +45,6 @@ public class StartGameConfiguration {
     }
 
     private Tetramino getTetramino0(){
-        ApplicationContext context =new AnnotationConfigApplicationContext("com.app.game.tetris.model");
         return context.getBean(Tetramino.class, (Object) new char[][]{{'0'}});
     }
 }
