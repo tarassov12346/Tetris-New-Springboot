@@ -19,7 +19,7 @@
 <img class="displayed" src="../img/black.png" alt="" width="240" height="384">
 
 <div id="controls">
-   <button id="startGameButton" onclick="start()" >Start</button>
+   <button id="startGameButton" type="button" class="button" onclick="start()" >Start</button>
 </div>
 
 <script>

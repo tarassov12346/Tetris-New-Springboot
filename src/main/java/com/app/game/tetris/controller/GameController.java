@@ -7,8 +7,6 @@ import com.app.game.tetris.model.Player;
 import com.app.game.tetris.serviceImpl.State;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +22,12 @@ public class GameController {
     private State state;
 
     @Autowired
+    private StartGameConfiguration startGameConfiguration;
+
+    @Autowired
+    private PlayGameConfiguration playGameConfiguration;
+
+    @Autowired
     private DaoService daoService;
 
     @GetMapping({
@@ -32,9 +36,8 @@ public class GameController {
     public String hello(){
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         currentSession = attr.getRequest().getSession(true);
-        ApplicationContext context = new AnnotationConfigApplicationContext(StartGameConfiguration.class);
-        player = context.getBean(Player.class);
-        state = context.getBean(State.class);
+        player = startGameConfiguration.createPlayer();
+        state = startGameConfiguration.initiateState();
         makeHelloView();
         return "hello";
     }
@@ -48,12 +51,11 @@ public class GameController {
 
     @GetMapping({"/{moveId}"})
     public String gamePlay(@PathVariable Integer moveId) {
-        ApplicationContext context = new AnnotationConfigApplicationContext(PlayGameConfiguration.class);
         switch (moveId) {
             case 0 -> {
-                Optional<State> moveDownState = (Optional<State>) context.getBean("moveDownState", state);
+                Optional<State> moveDownState = playGameConfiguration.moveDownState(state);
                 if (moveDownState.isEmpty()) {
-                    Optional<State> newTetraminoState = (Optional<State>) context.getBean("newTetraminoState", state);
+                    Optional<State> newTetraminoState = playGameConfiguration.newTetraminoState(state);
                     if (newTetraminoState.isEmpty()) {
                         currentSession.setAttribute("isGameOn", false);
                         currentSession.setAttribute("gameStatus", "Game over");
@@ -62,10 +64,10 @@ public class GameController {
                 }
                 state = moveDownState.orElse(state);
             }
-            case 1 -> state = (State) context.getBean("rotateState", state);
-            case 2 -> state = (State) context.getBean("moveLeftState", state);
-            case 3 -> state = (State) context.getBean("moveRightState", state);
-            case 4 -> state = (State) context.getBean("dropDownState", state);
+            case 1 -> state = playGameConfiguration.rotateState(state);
+            case 2 -> state = playGameConfiguration.moveLeftState(state);
+            case 3 -> state = playGameConfiguration.moveRightState(state);
+            case 4 -> state = playGameConfiguration.dropDownState(state);
             case 5 -> {
                 daoService.recordScore(player);
                 daoService.retrieveScores();

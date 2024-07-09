@@ -7,7 +7,6 @@ import com.app.game.tetris.serviceImpl.Stage;
 import com.app.game.tetris.serviceImpl.State;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import java.util.stream.IntStream;
 
 @Configuration
 public class StartGameConfiguration {
-    @Bean
+
     public Player createPlayer() {
         List<String> list = new ArrayList<>();
         list.add("Oswaldo");
@@ -30,7 +29,7 @@ public class StartGameConfiguration {
         ApplicationContext context =new AnnotationConfigApplicationContext("com.app.game.tetris.model");
         return context.getBean(Player.class,playerName,0);
     }
-    @Bean
+
     public State initiateState() {
         ApplicationContext context =new AnnotationConfigApplicationContext("com.app.game.tetris.serviceImpl");
         Stage emptyStage=context.getBean(Stage.class,makeEmptyMatrix(), getTetramino0(), 0, 0, 0);
