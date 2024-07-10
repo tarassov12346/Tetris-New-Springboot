@@ -1,9 +1,12 @@
 package com.app.game.tetris.controller;
 
 import com.app.game.tetris.config.PlayGameConfiguration;
+import com.app.game.tetris.config.RestartGameConfiguration;
+import com.app.game.tetris.config.SaveGameConfiguration;
 import com.app.game.tetris.config.StartGameConfiguration;
 import com.app.game.tetris.daoservice.DaoService;
 import com.app.game.tetris.model.Player;
+import com.app.game.tetris.model.SavedGame;
 import com.app.game.tetris.serviceImpl.State;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Optional;
 
 @Controller
@@ -29,6 +35,12 @@ public class GameController {
 
     @Autowired
     private DaoService daoService;
+
+    @Autowired
+    private SaveGameConfiguration saveGameConfiguration;
+
+    @Autowired
+    private RestartGameConfiguration restartGameConfiguration;
 
     @GetMapping({
             "/hello"
@@ -76,7 +88,28 @@ public class GameController {
         makeGamePageView();
         return "index";
     }
-    
+
+    @GetMapping({"/save"})
+    public String gameSave() throws IOException {
+        state.setPause();
+        currentSession.setAttribute("isGameOn", false);
+        SavedGame savedGame = saveGameConfiguration.saveGame(player,state);
+        FileOutputStream outputStream = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\resources\\save.ser");
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(savedGame);
+        objectOutputStream.close();
+        currentSession.setAttribute("gameStatus", "Game Saved");
+        return "index";
+    }
+
+    @GetMapping({"/restart"})
+    public String gameRestart() throws IOException, ClassNotFoundException {
+        state = restartGameConfiguration.recreateState();
+        initiateView();
+        makeGamePageView();
+        return "index";
+    }
+
     private void initiateView() {
         currentSession.setAttribute("gameStatus", "Game is ON");
         currentSession.setAttribute("isGameOn", true);
