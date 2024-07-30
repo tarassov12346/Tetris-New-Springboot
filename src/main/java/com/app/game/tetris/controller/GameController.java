@@ -76,9 +76,18 @@ public class GameController {
                 }
                 state = moveDownState.orElse(state);
             }
-            case 1 -> state = playGameConfiguration.rotateState(state);
-            case 2 -> state = playGameConfiguration.moveLeftState(state);
-            case 3 -> state = playGameConfiguration.moveRightState(state);
+            case 1 -> {
+                state = playGameConfiguration.moveDownState(state).orElse(state);
+                state = playGameConfiguration.rotateState(state);
+            }
+            case 2 -> {
+                state = playGameConfiguration.moveDownState(state).orElse(state);
+                state = playGameConfiguration.moveLeftState(state);
+            }
+            case 3 -> {
+                state = playGameConfiguration.moveDownState(state).orElse(state);
+                state = playGameConfiguration.moveRightState(state);
+            }
             case 4 -> state = playGameConfiguration.dropDownState(state);
             case 5 -> {
                 daoService.recordScore(player);
