@@ -24,7 +24,6 @@ import org.testng.annotations.*;
                 TetrisNewApplication.class, UnitTestService.class})
 public class UnitTest extends AbstractTestNGSpringContextTests {
     protected static final Logger log = Logger.getLogger(UnitTest.class.getName());
-    int moveCount;
 
     @Autowired
     private UnitTestService unitTestService;
@@ -80,12 +79,11 @@ public class UnitTest extends AbstractTestNGSpringContextTests {
     @Test(dataProvider = "data", groups = {"tetraminoBehaviourChecks"})
     public void doesTetraminoMoveRightStopAtBorder(State state) {
         log.info("doesTetraminoMoveRightStopAtBorder Test start");
-        moveCount = 0;
         State stateWithNewTetramino = state.createStateWithNewTetramino().orElse(state);
         log.info("new tetramino is called with the shape type " + unitTestService.getShapeTypeByTetramino(stateWithNewTetramino.getStage().getTetramino()));
         int tetraminoX = stateWithNewTetramino.getStage().getTetraminoX();
         int tetraminoY = stateWithNewTetramino.getStage().getTetraminoY();
-        State newState = unitTestService.moveFarRight(stateWithNewTetramino,moveCount);
+        State newState = unitTestService.moveFarRight(stateWithNewTetramino,0);
         State expectedState;
         Tetramino tetramino = newState.getStage().getTetramino();
         int collapsedLayersCount = newState.getStage().getCollapsedLayersCount();
@@ -120,13 +118,12 @@ public class UnitTest extends AbstractTestNGSpringContextTests {
     @Test(dataProvider = "data", groups = {"tetraminoBehaviourChecks"})
     public void doesTetraminoMoveLeftStopAtBorder(State state) {
         log.info("doesTetraminoMoveLeftStopAtBorder Test start");
-        moveCount = 0;
         State stateWithNewTetramino = state.createStateWithNewTetramino().orElse(state);
         log.info("new tetramino is called with the shape type " + unitTestService.getShapeTypeByTetramino(stateWithNewTetramino.getStage().getTetramino()));
         int tetraminoX = stateWithNewTetramino.getStage().getTetraminoX();
         int tetraminoY = stateWithNewTetramino.getStage().getTetraminoY();
         State expectedState;
-        State newState = unitTestService.moveFarLeft(stateWithNewTetramino,moveCount);
+        State newState = unitTestService.moveFarLeft(stateWithNewTetramino,0);
         Tetramino tetramino = newState.getStage().getTetramino();
         int collapsedLayersCount = newState.getStage().getCollapsedLayersCount();
         switch (unitTestService.getShapeTypeByTetramino(newState.getStage().getTetramino()).toString()) {
@@ -160,13 +157,12 @@ public class UnitTest extends AbstractTestNGSpringContextTests {
     @Test(dataProvider = "data", groups = {"tetraminoBehaviourChecks"})
     public void doesTetraminoMoveDownStopAtUnfilledLayers(State state) {
         log.info("doesTetraminoMoveDownStopAtUnfilledLayers Test start");
-        moveCount = 0;
         State stateWithNewTetramino = state.createStateWithNewTetramino().orElse(state);
         log.info("new tetramino is called with the shape type " + unitTestService.getShapeTypeByTetramino(stateWithNewTetramino.getStage().getTetramino()));
         int tetraminoX = stateWithNewTetramino.getStage().getTetraminoX();
         int tetraminoY = stateWithNewTetramino.getStage().getTetraminoY();
         State expectedState;
-        State newState = unitTestService.moveDeepDown(stateWithNewTetramino,moveCount);
+        State newState = unitTestService.moveDeepDown(stateWithNewTetramino,0);
         Tetramino tetramino = newState.getStage().getTetramino();
         int collapsedLayersCount = newState.getStage().getCollapsedLayersCount();
         switch (unitTestService.getShapeTypeByTetramino(newState.getStage().getTetramino()).toString()) {
