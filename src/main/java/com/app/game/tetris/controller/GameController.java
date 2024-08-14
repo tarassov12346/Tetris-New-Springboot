@@ -50,6 +50,7 @@ public class GameController {
         currentSession = attr.getRequest().getSession(true);
         player = startGameConfiguration.createPlayer();
         state = startGameConfiguration.initiateState();
+        daoService.retrieveScores();
         makeHelloView();
         return "hello";
     }
@@ -128,6 +129,8 @@ public class GameController {
     private void makeHelloView(){
         player = state.getPlayer();
         currentSession.setAttribute("player", player.getPlayerName());
+        currentSession.setAttribute("bestPlayer", daoService.getBestPlayer());
+        currentSession.setAttribute("bestScore", daoService.getBestScore());
     }
 
     private void makeGamePageView() {
