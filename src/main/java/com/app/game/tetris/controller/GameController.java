@@ -62,6 +62,13 @@ public class GameController {
         return "index";
     }
 
+    @GetMapping({"/profile"})
+    public String profile() {
+        daoService.retrievePlayerScores(player);
+        makeProfileView();
+        return "profile";
+    }
+
     @GetMapping({"/{moveId}"})
     public String gamePlay(@PathVariable Integer moveId) {
         switch (moveId) {
@@ -131,6 +138,14 @@ public class GameController {
         currentSession.setAttribute("player", player.getPlayerName());
         currentSession.setAttribute("bestPlayer", daoService.getBestPlayer());
         currentSession.setAttribute("bestScore", daoService.getBestScore());
+    }
+
+    private void makeProfileView(){
+        player = state.getPlayer();
+        currentSession.setAttribute("player", player.getPlayerName());
+        currentSession.setAttribute("playerBestScore", daoService.getPlayerBestScore());
+        currentSession.setAttribute("playerAttemptsNumber", daoService.getPlayerAttemptsNumber());
+
     }
 
     private void makeGamePageView() {
