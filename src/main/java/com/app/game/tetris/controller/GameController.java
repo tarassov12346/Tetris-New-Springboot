@@ -13,6 +13,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.GridFSUploadStream;
 import com.mongodb.client.gridfs.model.GridFSDownloadOptions;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -29,10 +30,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -83,6 +84,7 @@ public class GameController {
     public String profile() {
         daoService.retrievePlayerScores(player);
         loadMugShotFromMongodb(player.getPlayerName());
+        loadSnapShotFromMongodb(player.getPlayerName());
         makeProfileView();
         return "profile";
     }
@@ -118,6 +120,9 @@ public class GameController {
             case 5 -> {
                 daoService.recordScore(player);
                 daoService.retrieveScores();
+                makeDesktopSnapshot("deskTopSnapShot");
+                cleanMongodb(player.getPlayerName());
+                loadSnapShotIntoMongodb(player.getPlayerName());
             }
         }
         makeGamePageView();
@@ -164,6 +169,7 @@ public class GameController {
         currentSession.setAttribute("playerBestScore", daoService.getPlayerBestScore());
         currentSession.setAttribute("playerAttemptsNumber", daoService.getPlayerAttemptsNumber());
         currentSession.setAttribute("mugShot", "shots/mugShot.jpg");
+        currentSession.setAttribute("snapShot", "shots/deskTopSnapShot.jpg");
     }
 
     private void makeGamePageView() {
@@ -200,20 +206,48 @@ public class GameController {
         mongoClient.close();
     }
 
-    private void loadMugShotIntoMongodb(String fileName) {
+    private void loadSnapShotFromMongodb(String playerName) {
+        MongoClient mongoClient = MongoClients.create();
+        MongoDatabase database = mongoClient.getDatabase("shopDB");
+        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+        GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
+// Downloads a file to an output stream
+        try (FileOutputStream streamToDownloadTo = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\deskTopSnapShot.jpg")) {
+            gridFSBucket.downloadToStream(playerName + "deskTopSnapShot.jpg", streamToDownloadTo, downloadOptions);
+            streamToDownloadTo.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mongoClient.close();
+    }
+
+    private void cleanMongodb(String fileName) {
+        MongoClient mongoClient = MongoClients.create();
+        MongoDatabase database = mongoClient.getDatabase("shopDB");
+        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+        GridFSFindIterable gridFSFile = gridFSBucket.find(Filters.eq("filename", fileName + "deskTopSnapShot.jpg"));
+        while (gridFSFile.cursor().hasNext()) {
+            gridFSBucket.delete(gridFSFile.cursor().next().getId());
+        }
+        mongoClient.close();
+    }
+
+    private void loadSnapShotIntoMongodb(String fileName) {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         byte[] data = new byte[0];
         try {
-            data = Files.readAllBytes(Path.of("C:/TMP/" + fileName + ".jpg"));
+            data = Files.readAllBytes(Path.of(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\deskTopSnapShot.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         GridFSUploadOptions options = new GridFSUploadOptions()
                 .chunkSizeBytes(1048576)
                 .metadata(new Document("type", "jpg"));
-        try (GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(fileName.substring(0, 1).toUpperCase() + fileName.substring(1) + ".jpg", options)) {
+        try (GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(fileName + "deskTopSnapShot.jpg", options)) {
             // Writes file data to the GridFS upload stream
             uploadStream.write(data);
             uploadStream.flush();
@@ -238,5 +272,24 @@ public class GameController {
         // Now you can work with the 'database' object to perform CRUD operations.
         // Don't forget to close the MongoClient when you're done.
         mongoClient.close();
+    }
+
+    private void makeDesktopSnapshot(String fileNameDetail) {
+        Robot robot = null;
+        System.setProperty("java.awt.headless", "false");
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        String format = "jpg";
+        String fileName = System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\" + fileNameDetail + "." + format;
+        Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+        BufferedImage screenFullImage = robot.createScreenCapture(screenRect);
+        try {
+            ImageIO.write(screenFullImage, format, new File(fileName));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

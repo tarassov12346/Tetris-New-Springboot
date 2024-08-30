@@ -17,16 +17,15 @@
 <h1 text align="center"> <b id="profileBox"> Hello ${player}! Your best score is ${playerBestScore}</b> </h1>
 <h2 text align="center"> <b id="profileAttemptsBox"> You have played ${playerAttemptsNumber} times!</b> </h2>
 
-<img class="mugShot" src=${mugShot} alt="" width="120" height="120">
-
 <div id="controls">
    <button id="startGameButton" type="button" class="buttonStart" onclick="start()" >Start</button>
 </div>
 
+<img class="mugShot" src=${mugShot} alt="" width="120" height="120">
+<img class="snapShot" src=${snapShot} alt="" width="120" height="120">
+<img class="snapShot1" src=${snapShot} alt="" width="120" height="120">
+
 <script>
-
-
-
 
 function start() {
  window.location='/start';

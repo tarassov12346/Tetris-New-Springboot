@@ -21,3 +21,13 @@ img.mugShot {
     display: block;
     margin-left: auto;
     margin-right: auto }
+
+img.snapShot {
+    float: left;
+    width: 600px;
+    height: 500px;}
+
+img.snapShot1 {
+    float: right;
+    width: 600px;
+    height: 500px;}
