@@ -84,7 +84,8 @@ public class GameController {
     public String profile() {
         daoService.retrievePlayerScores(player);
         loadMugShotFromMongodb(player.getPlayerName());
-        loadSnapShotFromMongodb(player.getPlayerName());
+        loadSnapShotFromMongodb(player.getPlayerName(),"deskTopSnapShot");
+        loadSnapShotFromMongodb(player.getPlayerName(),"deskTopSnapShotBest");
         makeProfileView();
         return "profile";
     }
@@ -121,8 +122,13 @@ public class GameController {
                 daoService.recordScore(player);
                 daoService.retrieveScores();
                 makeDesktopSnapshot("deskTopSnapShot");
-                cleanMongodb(player.getPlayerName());
-                loadSnapShotIntoMongodb(player.getPlayerName());
+                cleanMongodb(player.getPlayerName(),"deskTopSnapShot");
+                loadSnapShotIntoMongodb(player.getPlayerName(),"deskTopSnapShot");
+                if (player.getPlayerScore()>=daoService.getPlayerBestScore()){
+                    makeDesktopSnapshot("deskTopSnapShotBest");
+                    cleanMongodb(player.getPlayerName(),"deskTopSnapShotBest");
+                    loadSnapShotIntoMongodb(player.getPlayerName(),"deskTopSnapShotBest");
+                }
             }
         }
         makeGamePageView();
@@ -170,6 +176,7 @@ public class GameController {
         currentSession.setAttribute("playerAttemptsNumber", daoService.getPlayerAttemptsNumber());
         currentSession.setAttribute("mugShot", "shots/mugShot.jpg");
         currentSession.setAttribute("snapShot", "shots/deskTopSnapShot.jpg");
+        currentSession.setAttribute("snapShotBest", "shots/deskTopSnapShotBest.jpg");
     }
 
     private void makeGamePageView() {
@@ -206,14 +213,14 @@ public class GameController {
         mongoClient.close();
     }
 
-    private void loadSnapShotFromMongodb(String playerName) {
+    private void loadSnapShotFromMongodb(String playerName,String fileName) {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
 // Downloads a file to an output stream
-        try (FileOutputStream streamToDownloadTo = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\deskTopSnapShot.jpg")) {
-            gridFSBucket.downloadToStream(playerName + "deskTopSnapShot.jpg", streamToDownloadTo, downloadOptions);
+        try (FileOutputStream streamToDownloadTo = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\"+fileName+".jpg")) {
+            gridFSBucket.downloadToStream(playerName + fileName+".jpg", streamToDownloadTo, downloadOptions);
             streamToDownloadTo.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -223,31 +230,31 @@ public class GameController {
         mongoClient.close();
     }
 
-    private void cleanMongodb(String fileName) {
+    private void cleanMongodb(String playerName, String fileName) {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
-        GridFSFindIterable gridFSFile = gridFSBucket.find(Filters.eq("filename", fileName + "deskTopSnapShot.jpg"));
+        GridFSFindIterable gridFSFile = gridFSBucket.find(Filters.eq("filename", playerName + fileName+".jpg"));
         while (gridFSFile.cursor().hasNext()) {
             gridFSBucket.delete(gridFSFile.cursor().next().getId());
         }
         mongoClient.close();
     }
 
-    private void loadSnapShotIntoMongodb(String fileName) {
+    private void loadSnapShotIntoMongodb(String playerName, String fileName) {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         byte[] data = new byte[0];
         try {
-            data = Files.readAllBytes(Path.of(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\deskTopSnapShot.jpg"));
+            data = Files.readAllBytes(Path.of(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\"+fileName+".jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
         GridFSUploadOptions options = new GridFSUploadOptions()
                 .chunkSizeBytes(1048576)
                 .metadata(new Document("type", "jpg"));
-        try (GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(fileName + "deskTopSnapShot.jpg", options)) {
+        try (GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(playerName + fileName+".jpg", options)) {
             // Writes file data to the GridFS upload stream
             uploadStream.write(data);
             uploadStream.flush();
