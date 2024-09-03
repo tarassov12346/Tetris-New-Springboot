@@ -32,6 +32,15 @@ import java.util.function.Consumer;
 public class DaoMongo implements DaoMongoService {
 
     @Override
+    public void runMongoServer() {
+        try {
+            Runtime.getRuntime().exec(new String [] {MongoPath});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void loadMugShotFromMongodb(String playerName) {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("shopDB");

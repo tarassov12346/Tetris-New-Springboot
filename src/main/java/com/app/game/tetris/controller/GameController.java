@@ -9,21 +9,7 @@ import com.app.game.tetris.daoservice.DaoService;
 import com.app.game.tetris.model.Player;
 import com.app.game.tetris.model.SavedGame;
 import com.app.game.tetris.serviceImpl.State;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.gridfs.GridFSBucket;
-import com.mongodb.client.gridfs.GridFSBuckets;
-import com.mongodb.client.gridfs.GridFSFindIterable;
-import com.mongodb.client.gridfs.GridFSUploadStream;
-import com.mongodb.client.gridfs.model.GridFSDownloadOptions;
-import com.mongodb.client.gridfs.model.GridFSFile;
-import com.mongodb.client.gridfs.model.GridFSUploadOptions;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 import jakarta.servlet.http.HttpSession;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Controller
 public class GameController {
@@ -73,6 +55,7 @@ public class GameController {
         player = startGameConfiguration.createPlayer();
         state = startGameConfiguration.initiateState();
         daoService.retrieveScores();
+        daoMongoService.runMongoServer();
         makeHelloView();
         return "hello";
     }
