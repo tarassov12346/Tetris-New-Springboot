@@ -31,8 +31,13 @@ public class Dao implements DaoService {
     public void retrieveScores() {
         List<Player> playerList = playerRepository.findAll();
         Collections.sort(playerList, Comparator.comparingInt(Player::getPlayerScore));
-        bestPlayer = playerList.get(playerList.size() - 1).getPlayerName();
-        bestScore = playerList.get(playerList.size() - 1).getPlayerScore();
+        if (playerList.size() > 0) {
+            bestPlayer = playerList.get(playerList.size() - 1).getPlayerName();
+            bestScore = playerList.get(playerList.size() - 1).getPlayerScore();
+        } else {
+            bestPlayer = "To be seen yet!";
+            bestScore = 0;
+        }
     }
 
     @Override
@@ -43,7 +48,9 @@ public class Dao implements DaoService {
             if (allPlayer.getPlayerName().equals(player.getPlayerName())) playerByNameList.add(allPlayer);
         });
         Collections.sort(playerByNameList, Comparator.comparingInt(Player::getPlayerScore));
-        playerBestScore = playerByNameList.get(playerByNameList.size() - 1).getPlayerScore();
+        if (playerByNameList.size() > 0)
+            playerBestScore = playerByNameList.get(playerByNameList.size() - 1).getPlayerScore();
+        else playerBestScore = 0;
         playerAttemptsNumber = playerByNameList.size();
     }
 

@@ -11,6 +11,10 @@
 	<groupId>com.app.game</groupId>
 	<artifactId>Tetris-New</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
+	<packaging>war</packaging>
+
+
 	<name>Tetris-New</name>
 	<description>Tetris game project for Spring Boot</description>
 	<properties>
@@ -108,12 +112,16 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.13.1</version>
 		</dependency>
+
+
+		<!--
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-base</artifactId>
 			<version>21-ea+5</version>
 			<scope>test</scope>
 		</dependency>
+		-->
 
 
 		<dependency>

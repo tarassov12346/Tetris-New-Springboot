@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  app:
+    container_name: tetris-new
+    image: tetris-new:0.0.1
+    build: ./
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresqldb:5432/game
+      - SPRING_DATA_MONGODB_URI=mongodb://springboot-mongo:27017/shopDB
+
+    depends_on:
+      - postgresqldb
+      - mongo
+
+  postgresqldb:
+    image: postgres
+    build:
+      context: ./
+
+    ports:
+      - "5432:5432"
+    environment:
+      - PGDATA=/var/lib/postgresql/data
+      - POSTGRES_DB=game
+      - POSTGRES_PASSWORD=mine
+      - POSTGRES_USER=postgres
+  mongo:
+    image: mongo
+    container_name: springboot-mongo
+    #    ports:  # for demo/debug purpose only
+    #      - 27018:27017
+
+    restart: always

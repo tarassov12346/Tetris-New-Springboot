@@ -15,6 +15,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -26,47 +27,66 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Service
 public class DaoMongo implements DaoMongoService {
 
+    @Value("${mongodbPath}")
+    String mongodbPath;
+
+    String pathToShots=System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\";
+    String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "\\src\\main\\webapp\\mongoPrepareShots\\";
+    String uri="mongodb://localhost";
+
+  /*  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
+    String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
+    String uri="mongodb://springboot-mongo";*/
+
     @Override
     public void runMongoServer() {
         try {
-            Runtime.getRuntime().exec(new String [] {MongoPath});
+            Runtime.getRuntime().exec(new String [] {mongodbPath});
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void loadMugShotFromMongodb(String playerName) {
-        MongoClient mongoClient = MongoClients.create();
-        MongoDatabase database = mongoClient.getDatabase("shopDB");
-        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
-        GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
-// Downloads a file to an output stream
-        try (FileOutputStream streamToDownloadTo = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\mugShot.jpg")) {
-            gridFSBucket.downloadToStream(playerName + ".jpg", streamToDownloadTo, downloadOptions);
-            streamToDownloadTo.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mongoClient.close();
+    public void prepareMongoDB() {
+        List<String> list = new ArrayList<>();
+        list.add("Oswaldo");
+        list.add("Tommy");
+        list.add("Dunny");
+        list.add("Bonny");
+        list.add("Ira");
+        list.add("Wolfy");
+        list.forEach(playerName-> {
+            fillMongoDB(playerName);
+            fillMongoDB(playerName+"deskTopSnapShotBest");
+            fillMongoDB(playerName+"deskTopSnapShot");
+        });
     }
 
     @Override
-    public void loadSnapShotFromMongodb(String playerName, String fileName) {
-        MongoClient mongoClient = MongoClients.create();
+    public boolean isMongoDBNotEmpty() {
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase database = mongoClient.getDatabase("shopDB");
+        return database.getCollection("fs.files").countDocuments() > 0;
+    }
+
+    @Override
+    public void loadShotFromMongodb(String playerName, String fileName) {
+        MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
 // Downloads a file to an output stream
-        try (FileOutputStream streamToDownloadTo = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\"+fileName+".jpg")) {
-            gridFSBucket.downloadToStream(playerName + fileName+".jpg", streamToDownloadTo, downloadOptions);
+        try (FileOutputStream streamToDownloadTo = new FileOutputStream(pathToShots+fileName+".jpg")) {
+            if (fileName.equals("mugShot")) gridFSBucket.downloadToStream(playerName + ".jpg", streamToDownloadTo, downloadOptions);
+            else gridFSBucket.downloadToStream(playerName + fileName+".jpg", streamToDownloadTo, downloadOptions);
             streamToDownloadTo.flush();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -78,7 +98,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void cleanMongodb(String playerName, String fileName) {
-        MongoClient mongoClient = MongoClients.create();
+        MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         GridFSFindIterable gridFSFile = gridFSBucket.find(Filters.eq("filename", playerName + fileName+".jpg"));
@@ -90,12 +110,12 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void loadSnapShotIntoMongodb(String playerName, String fileName) {
-        MongoClient mongoClient = MongoClients.create();
+        MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
         byte[] data = new byte[0];
         try {
-            data = Files.readAllBytes(Path.of(System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\"+fileName+".jpg"));
+            data = Files.readAllBytes(Path.of(pathToShots+fileName+".jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,7 +159,7 @@ public class DaoMongo implements DaoMongoService {
             e.printStackTrace();
         }
         String format = "jpg";
-        String fileName = System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\" + fileNameDetail + "." + format;
+        String fileName = pathToShots + fileNameDetail + "." + format;
         Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         BufferedImage screenFullImage = robot.createScreenCapture(screenRect);
         try {
@@ -147,5 +167,45 @@ public class DaoMongo implements DaoMongoService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void fillMongoDB(String fileName){
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase database = mongoClient.getDatabase("shopDB");
+        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+        byte[] data = new byte[0];
+        try {
+            data = Files.readAllBytes(Path.of(pathToImageMongoPreparedShots+fileName+".jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        GridFSUploadOptions options = new GridFSUploadOptions()
+                .chunkSizeBytes(1048576)
+                .metadata(new Document("type", "jpg"));
+        try (GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(fileName+".jpg", options)) {
+            // Writes file data to the GridFS upload stream
+            uploadStream.write(data);
+            uploadStream.flush();
+            // Prints the "_id" value of the uploaded file
+            System.out.println("The file id of the uploaded file is: " + uploadStream.getObjectId().toHexString());
+// Prints a message if any exceptions occur during the upload process
+        } catch (Exception e) {
+            System.err.println("The file upload failed: " + e);
+        }
+        Bson query = Filters.eq("metadata.type", "jpg");
+        Bson sort = Sorts.ascending("filename");
+// Retrieves 5 documents in the bucket that match the filter and prints metadata
+        gridFSBucket.find(query)
+                .sort(sort)
+                .limit(5)
+                .forEach(new Consumer<GridFSFile>() {
+                    @Override
+                    public void accept(final GridFSFile gridFSFile) {
+                        System.out.println(gridFSFile);
+                    }
+                });
+        // Now you can work with the 'database' object to perform CRUD operations.
+        // Don't forget to close the MongoClient when you're done.
+        mongoClient.close();
     }
 }

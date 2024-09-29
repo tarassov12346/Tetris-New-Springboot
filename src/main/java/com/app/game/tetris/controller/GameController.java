@@ -9,17 +9,19 @@ import com.app.game.tetris.daoservice.DaoService;
 import com.app.game.tetris.model.Player;
 import com.app.game.tetris.model.SavedGame;
 import com.app.game.tetris.serviceImpl.State;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Optional;
 
 @Controller
@@ -70,9 +72,10 @@ public class GameController {
     @GetMapping({"/profile"})
     public String profile() {
         daoService.retrievePlayerScores(player);
-        daoMongoService.loadMugShotFromMongodb(player.getPlayerName());
-        daoMongoService.loadSnapShotFromMongodb(player.getPlayerName(), "deskTopSnapShot");
-        daoMongoService.loadSnapShotFromMongodb(player.getPlayerName(), "deskTopSnapShotBest");
+        if (!daoMongoService.isMongoDBNotEmpty()) daoMongoService.prepareMongoDB();
+        daoMongoService.loadShotFromMongodb(player.getPlayerName(), "mugShot");
+        daoMongoService.loadShotFromMongodb(player.getPlayerName(), "deskTopSnapShot");
+        daoMongoService.loadShotFromMongodb(player.getPlayerName(), "deskTopSnapShotBest");
         makeProfileView();
         return "profile";
     }
