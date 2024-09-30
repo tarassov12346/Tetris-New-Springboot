@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -41,9 +38,9 @@ public class DaoMongo implements DaoMongoService {
     String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "\\src\\main\\webapp\\mongoPrepareShots\\";
     String uri="mongodb://localhost";
 
-  /*  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
-    String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
-    String uri="mongodb://springboot-mongo";*/
+  //  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
+  //  String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
+   // String uri="mongodb://springboot-mongo";
 
     @Override
     public void runMongoServer() {
@@ -167,6 +164,28 @@ public class DaoMongo implements DaoMongoService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public byte[] loadByteArrayFromMongodb(String playerName, String fileName) {
+        MongoClient mongoClient = MongoClients.create(uri);
+        MongoDatabase database = mongoClient.getDatabase("shopDB");
+        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
+        GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
+        byte[] imagenEnBytes = new byte[16384];
+// Downloads a file to an output stream
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream();) {
+            if (fileName.equals("mugShot")) gridFSBucket.downloadToStream(playerName + ".jpg", buffer, downloadOptions);
+            else gridFSBucket.downloadToStream(playerName + fileName+".jpg", buffer, downloadOptions);
+            imagenEnBytes = buffer.toByteArray();
+            buffer.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mongoClient.close();
+        return imagenEnBytes;
     }
 
     private void fillMongoDB(String fileName){

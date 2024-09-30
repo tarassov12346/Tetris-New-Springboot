@@ -21,7 +21,7 @@
    <button id="startGameButton" type="button" class="buttonStart" onclick="start()" >Start</button>
 </div>
 
-<img class="mugShot" src=${mugShot} alt="" width="120" height="120">
+<img class="mugShot" src="/getPhoto" alt="" width="120" height="120">
 <img class="snapShot" src=${snapShot} alt="" width="120" height="120">
 <img class="snapShotBest" src=${snapShotBest} alt="" width="120" height="120">
 

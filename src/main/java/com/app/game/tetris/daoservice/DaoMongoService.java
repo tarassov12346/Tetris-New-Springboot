@@ -8,4 +8,5 @@ public interface DaoMongoService {
     void cleanMongodb(String playerName, String fileName);
     void loadSnapShotIntoMongodb(String playerName, String fileName);
     void makeDesktopSnapshot(String fileNameDetail);
+    byte[] loadByteArrayFromMongodb(String playerName, String fileName);
 }

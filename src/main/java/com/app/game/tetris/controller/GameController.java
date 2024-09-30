@@ -146,6 +146,27 @@ public class GameController {
         return "index";
     }
 
+    @GetMapping({"/getPhoto"})
+    public void getPhoto(HttpServletRequest request,
+                         HttpServletResponse response) {
+        byte[] imagenEnBytes = daoMongoService.loadByteArrayFromMongodb(player.getPlayerName(), "mugShot");
+        response.setHeader("Accept-ranges", "bytes");
+        response.setContentType("image/jpeg");
+        response.setContentLength(imagenEnBytes.length);
+        response.setHeader("Expires", "0");
+        response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+        response.setHeader("Content-Description", "File Transfer");
+        response.setHeader("Content-Transfer-Encoding:", "binary");
+        try {
+            OutputStream out = response.getOutputStream();
+            out.write(imagenEnBytes);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initiateView() {
         currentSession.setAttribute("gameStatus", "Game is ON");
         currentSession.setAttribute("isGameOn", true);
@@ -164,7 +185,7 @@ public class GameController {
         currentSession.setAttribute("player", player.getPlayerName());
         currentSession.setAttribute("playerBestScore", daoService.getPlayerBestScore());
         currentSession.setAttribute("playerAttemptsNumber", daoService.getPlayerAttemptsNumber());
-        currentSession.setAttribute("mugShot", "shots/mugShot.jpg");
+  //      currentSession.setAttribute("mugShot", "shots/mugShot.jpg");
         currentSession.setAttribute("snapShot", "shots/deskTopSnapShot.jpg");
         currentSession.setAttribute("snapShotBest", "shots/deskTopSnapShotBest.jpg");
     }
