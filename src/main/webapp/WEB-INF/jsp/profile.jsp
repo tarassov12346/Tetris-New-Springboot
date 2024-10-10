@@ -22,8 +22,8 @@
 </div>
 
 <img class="mugShot" src="/getPhoto" alt="" width="120" height="120">
-<img class="snapShot" src=${snapShot} alt="" width="120" height="120">
-<img class="snapShotBest" src=${snapShotBest} alt="" width="120" height="120">
+<img class="snapShot" src="/getSnapShot" alt="" width="120" height="120">
+<img class="snapShotBest" src="/getSnapShotBest" alt="" width="120" height="120">
 
 <script>
 

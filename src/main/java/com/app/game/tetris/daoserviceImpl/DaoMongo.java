@@ -38,8 +38,8 @@ public class DaoMongo implements DaoMongoService {
     String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "\\src\\main\\webapp\\mongoPrepareShots\\";
     String uri="mongodb://localhost";
 
-  //  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
-  //  String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
+   // String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
+   // String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
    // String uri="mongodb://springboot-mongo";
 
     @Override
@@ -72,25 +72,6 @@ public class DaoMongo implements DaoMongoService {
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         return database.getCollection("fs.files").countDocuments() > 0;
-    }
-
-    @Override
-    public void loadShotFromMongodb(String playerName, String fileName) {
-        MongoClient mongoClient = MongoClients.create(uri);
-        MongoDatabase database = mongoClient.getDatabase("shopDB");
-        GridFSBucket gridFSBucket = GridFSBuckets.create(database);
-        GridFSDownloadOptions downloadOptions = new GridFSDownloadOptions().revision(0);
-// Downloads a file to an output stream
-        try (FileOutputStream streamToDownloadTo = new FileOutputStream(pathToShots+fileName+".jpg")) {
-            if (fileName.equals("mugShot")) gridFSBucket.downloadToStream(playerName + ".jpg", streamToDownloadTo, downloadOptions);
-            else gridFSBucket.downloadToStream(playerName + fileName+".jpg", streamToDownloadTo, downloadOptions);
-            streamToDownloadTo.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mongoClient.close();
     }
 
     @Override
