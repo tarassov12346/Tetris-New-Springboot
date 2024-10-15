@@ -77,6 +77,17 @@ public class GameController {
         return "profile";
     }
 
+
+    @GetMapping({"/6"})
+    public String snapShot() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        currentSession = attr.getRequest().getSession(true);
+        makeGamePageView();
+        return "snapshot";
+    }
+
+
+
     @GetMapping({"/{moveId}"})
     public String gamePlay(@PathVariable Integer moveId) {
         switch (moveId) {

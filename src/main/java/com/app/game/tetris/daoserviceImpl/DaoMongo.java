@@ -1,6 +1,10 @@
 package com.app.game.tetris.daoserviceImpl;
 
 import com.app.game.tetris.daoservice.DaoMongoService;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -24,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,9 +43,9 @@ public class DaoMongo implements DaoMongoService {
     String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "\\src\\main\\webapp\\mongoPrepareShots\\";
     String uri="mongodb://localhost";
 
-   // String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
-   // String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
-   // String uri="mongodb://springboot-mongo";
+  //  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
+  //  String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
+  //  String uri="mongodb://springboot-mongo";
 
     @Override
     public void runMongoServer() {
@@ -129,7 +134,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void makeDesktopSnapshot(String fileNameDetail) {
-        Robot robot = null;
+       Robot robot = null;
         System.setProperty("java.awt.headless", "false");
         try {
             robot = new Robot();
@@ -145,6 +150,20 @@ public class DaoMongo implements DaoMongoService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    //    try (Playwright playwright = Playwright.create()){
+    //        playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
+    //    }
+    /*      String format = "jpg";
+        String fileName = pathToShots + fileNameDetail + "." + format;
+
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
+            Page page = browser.newPage();
+            page.navigate("http://localhost:8080/6");
+            page.waitForURL("http://localhost:8080/6");
+            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get(fileName)));
+        }*/
+
     }
 
     @Override

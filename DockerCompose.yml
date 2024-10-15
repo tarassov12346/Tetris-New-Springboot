@@ -13,6 +13,7 @@ services:
     depends_on:
       - postgresqldb
       - mongo
+      - playwright
 
   postgresqldb:
     image: postgres
@@ -33,3 +34,14 @@ services:
     #      - 27018:27017
 
     restart: always
+
+  playwright:
+    build: dockerPlaywright/
+    init: true
+    command: # command depending on a project
+    environment:
+      - DISPLAY=:0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+
