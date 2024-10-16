@@ -9,7 +9,6 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresqldb:5432/game
       - SPRING_DATA_MONGODB_URI=mongodb://springboot-mongo:27017/shopDB
-
     depends_on:
       - postgresqldb
       - mongo
@@ -19,7 +18,6 @@ services:
     image: postgres
     build:
       context: ./
-
     ports:
       - "5432:5432"
     environment:
@@ -27,21 +25,17 @@ services:
       - POSTGRES_DB=game
       - POSTGRES_PASSWORD=mine
       - POSTGRES_USER=postgres
+
   mongo:
     image: mongo
     container_name: springboot-mongo
     #    ports:  # for demo/debug purpose only
     #      - 27018:27017
-
     restart: always
 
   playwright:
-    build: dockerPlaywright/
-    init: true
-    command: # command depending on a project
-    environment:
-      - DISPLAY=:0
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
+    image: mcr.microsoft.com/playwright/java:v1.30.0-focal
+    build:
+      context: ./
 
 
