@@ -77,17 +77,6 @@ public class GameController {
         return "profile";
     }
 
-
-    @GetMapping({"/6"})
-    public String snapShot() {
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        currentSession = attr.getRequest().getSession(true);
-        makeGamePageView();
-        return "snapshot";
-    }
-
-
-
     @GetMapping({"/{moveId}"})
     public String gamePlay(@PathVariable Integer moveId) {
         switch (moveId) {
@@ -116,25 +105,44 @@ public class GameController {
                 state = playGameConfiguration.moveRightState(state);
             }
             case 4 -> state = playGameConfiguration.dropDownState(state);
-            case 5 -> {
-                daoService.recordScore(player);
-                daoService.retrieveScores();
-                daoMongoService.makeDesktopSnapshot("deskTopSnapShot");
-                daoMongoService.cleanMongodb(player.getPlayerName(), "deskTopSnapShot");
-                daoMongoService.loadSnapShotIntoMongodb(player.getPlayerName(), "deskTopSnapShot");
-                if (player.getPlayerScore() >= daoService.getPlayerBestScore()) {
-                    daoMongoService.makeDesktopSnapshot("deskTopSnapShotBest");
-                    daoMongoService.cleanMongodb(player.getPlayerName(), "deskTopSnapShotBest");
-                    daoMongoService.loadSnapShotIntoMongodb(player.getPlayerName(), "deskTopSnapShotBest");
-                }
-            }
+
         }
         makeGamePageView();
         return "index";
     }
 
+    @GetMapping({"/5"})
+    public String finalScene() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        currentSession = attr.getRequest().getSession(true);
+        currentSession.setAttribute("gameStatus", "Game over");
+        daoService.recordScore(player);
+        daoService.retrieveScores();
+        daoMongoService.makeDesktopSnapshot("deskTopSnapShot");
+        daoMongoService.cleanMongodb(player.getPlayerName(), "deskTopSnapShot");
+        daoMongoService.loadSnapShotIntoMongodb(player.getPlayerName(), "deskTopSnapShot");
+        if (player.getPlayerScore() >= daoService.getPlayerBestScore()) {
+            daoMongoService.makeDesktopSnapshot("deskTopSnapShotBest");
+            daoMongoService.cleanMongodb(player.getPlayerName(), "deskTopSnapShotBest");
+            daoMongoService.loadSnapShotIntoMongodb(player.getPlayerName(), "deskTopSnapShotBest");
+        }
+        makeGamePageView();
+        return "snapshot";
+    }
+
+    @GetMapping({"/6"})
+    public String snapShot() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        currentSession = attr.getRequest().getSession(true);
+        currentSession.setAttribute("gameStatus", "Game over");
+        makeGamePageView();
+        return "snapshot";
+    }
+
     @GetMapping({"/save"})
     public String gameSave() throws IOException {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        currentSession = attr.getRequest().getSession(true);
         state.setPause();
         currentSession.setAttribute("isGameOn", false);
         SavedGame savedGame = saveGameConfiguration.saveGame(player, state);
@@ -143,7 +151,8 @@ public class GameController {
         objectOutputStream.writeObject(savedGame);
         objectOutputStream.close();
         currentSession.setAttribute("gameStatus", "Game Saved");
-        return "index";
+        makeGamePageView();
+        return "snapshot";
     }
 
     @GetMapping({"/restart"})
@@ -216,7 +225,6 @@ public class GameController {
             e.printStackTrace();
         }
     }
-
 
     private void initiateView() {
         currentSession.setAttribute("gameStatus", "Game is ON");

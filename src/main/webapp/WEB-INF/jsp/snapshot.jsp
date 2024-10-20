@@ -329,15 +329,22 @@
 </div>
 
 <div id="controls">
-   <button id="leftButton" onclick="left()" >Left</button>
-   <button id="rotateButton" onclick="rotate()" >Rotate</button>
-   <button id="dropButton" onclick="drop()" >Drop</button>
    <button id="newGameButton" onclick="newgame()" >NewGame</button>
-   <button id="saveButton" onclick="save()" >Save</button>
-   <button id="restartButton" onclick="restart()" >Restart</button>
-   <button id="rightButton" onclick="right()" >Right</button>
 </div>
 
+<script>
+
+
+
+function newgame() {
+ window.location='/hello';
+ }
+
+
+
+
+
+</script>
 
 </body>
 </html>
