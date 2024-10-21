@@ -47,17 +47,6 @@ public class DaoMongo implements DaoMongoService {
     @Value("${mongoUri}")
     String mongoUri;
 
-
-
-
- //   String pathToShots = System.getProperty("user.dir") + "\\src\\main\\webapp\\shots\\";
-//    String pathToImageMongoPreparedShots = System.getProperty("user.dir") + "\\src\\main\\webapp\\mongoPrepareShots\\";
-//    String uri = "mongodb://localhost";
-
-    //  String pathToShots=System.getProperty("user.dir") + "/src/main/webapp/shots/";
- //     String pathToImageMongoPreparedShots= System.getProperty("user.dir") + "/src/main/webapp/mongoPrepareShots/";
-   //   String uri="mongodb://springboot-mongo";
-
     @Override
     public void runMongoServer() {
         try {
@@ -85,10 +74,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public boolean isMongoDBNotEmpty() {
-
         String uri = mongoUri;
-
-
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         return database.getCollection("fs.files").countDocuments() > 0;
@@ -96,10 +82,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void cleanMongodb(String playerName, String fileName) {
-
         String uri = mongoUri;
-
-
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
@@ -112,10 +95,8 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void loadSnapShotIntoMongodb(String playerName, String fileName) {
-
         String uri = mongoUri;
         String pathToShots = System.getProperty("user.dir") + shotsPath;
-
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
@@ -157,11 +138,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public void makeDesktopSnapshot(String fileNameDetail) {
-
         String pathToShots = System.getProperty("user.dir") + shotsPath;
-
-
-
         String format = "jpg";
         String fileName = pathToShots + fileNameDetail + "." + format;
 
@@ -176,10 +153,7 @@ public class DaoMongo implements DaoMongoService {
 
     @Override
     public byte[] loadByteArrayFromMongodb(String playerName, String fileName) {
-
         String uri = mongoUri;
-
-
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
@@ -201,11 +175,8 @@ public class DaoMongo implements DaoMongoService {
     }
 
     private void fillMongoDB(String fileName) {
-
         String uri = mongoUri;
         String pathToImageMongoPreparedShots = System.getProperty("user.dir") + mongoPrepareShotsPath;
-
-
         MongoClient mongoClient = MongoClients.create(uri);
         MongoDatabase database = mongoClient.getDatabase("shopDB");
         GridFSBucket gridFSBucket = GridFSBuckets.create(database);
