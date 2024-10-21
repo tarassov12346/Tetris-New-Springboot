@@ -9,6 +9,9 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresqldb:5432/game
       - SPRING_DATA_MONGODB_URI=mongodb://springboot-mongo:27017/shopDB
+      - SHOTSPATH=/src/main/webapp/shots/
+      - MONGOPREPARESHOTSPATH=/src/main/webapp/mongoPrepareShots/
+      - MONGOURI=mongodb://springboot-mongo
     depends_on:
       - postgresqldb
       - mongo

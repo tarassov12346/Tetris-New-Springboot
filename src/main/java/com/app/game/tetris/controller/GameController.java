@@ -86,7 +86,7 @@ public class GameController {
                     Optional<State> newTetraminoState = playGameConfiguration.newTetraminoState(state);
                     if (newTetraminoState.isEmpty()) {
                         currentSession.setAttribute("isGameOn", false);
-                        currentSession.setAttribute("gameStatus", "Game over");
+                        currentSession.setAttribute("gameStatus", "PLEASE WAIT!!!");
                         state.stop();
                     } else state = newTetraminoState.orElse(state);
                 }
