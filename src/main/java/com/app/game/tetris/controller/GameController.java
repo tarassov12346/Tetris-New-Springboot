@@ -57,7 +57,7 @@ public class GameController {
         player = startGameConfiguration.createPlayer();
         state = startGameConfiguration.initiateState();
         daoService.retrieveScores();
-        daoMongoService.runMongoServer();
+    //    daoMongoService.runMongoServer();
         makeHelloView();
         return "hello";
     }

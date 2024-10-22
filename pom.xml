@@ -11,17 +11,13 @@
 	<groupId>com.app.game</groupId>
 	<artifactId>Tetris-New</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-
 	<packaging>war</packaging>
-
-
 	<name>Tetris-New</name>
 	<description>Tetris game project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -30,54 +26,39 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-
-
-
-
-
-
+			<scope>provided</scope>
+			<!-- <scope>provided</scope> -->
 		</dependency>
-
 
 		<dependency>
 			<groupId>com.microsoft.playwright</groupId>
 			<artifactId>playwright</artifactId>
 			<version>1.30.0</version>
 		</dependency>
-
-
-
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>jakarta.servlet.jsp.jstl</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
@@ -128,18 +109,6 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.13.1</version>
 		</dependency>
-
-
-		<!--
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-base</artifactId>
-			<version>21-ea+5</version>
-			<scope>test</scope>
-		</dependency>
-		-->
-
-
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-core</artifactId>
@@ -150,17 +119,7 @@
 			<artifactId>mongodb-driver-sync</artifactId>
 			<version>4.11.0</version>
 		</dependency>
-
-
-
-
-
-
-
-
 	</dependencies>
-
-
 
 	<build>
 		<plugins>
@@ -170,5 +129,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

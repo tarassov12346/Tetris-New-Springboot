@@ -1,5 +1,6 @@
 HELP.md
 target/
+!/target/Tetris-New-0.0.1-SNAPSHOT.war
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
